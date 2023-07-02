@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def normalize(image):
+def data_norm(image):
     mean = np.mean(image)
     std = np.std(image)
-    return (image-mean)/std
+    return (image - mean) / std
 
 
 def plot2d(seis, fault, at=1):
@@ -48,4 +48,32 @@ def plot3d(seis, fault):
     fig.subplots_adjust(wspace=0.3)
     # Show the plot
     plt.tight_layout()
+    plt.show()
+
+
+def show_history(history):
+    # list all data in history
+    print(history.history.keys())
+    plt.figure(figsize=(10, 6))
+    # summarize history for accuracy
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('Model accuracy', fontsize=20)
+    plt.ylabel('Accuracy', fontsize=20)
+    plt.xlabel('Epoch', fontsize=20)
+    plt.legend(['train', 'test'], loc='center right', fontsize=20)
+    plt.tick_params(axis='both', which='major', labelsize=18)
+    plt.tick_params(axis='both', which='minor', labelsize=18)
+    plt.show()
+
+    # summarize history for loss
+    plt.figure(figsize=(10, 6))
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss', fontsize=20)
+    plt.ylabel('Loss', fontsize=20)
+    plt.xlabel('Epoch', fontsize=20)
+    plt.legend(['train', 'test'], loc='center right', fontsize=20)
+    plt.tick_params(axis='both', which='major', labelsize=18)
+    plt.tick_params(axis='both', which='minor', labelsize=18)
     plt.show()
