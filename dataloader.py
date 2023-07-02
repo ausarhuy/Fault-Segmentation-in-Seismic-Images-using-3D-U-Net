@@ -1,5 +1,5 @@
 import numpy as np
-from tensorflow.keras import Sequence
+from tensorflow.keras.utils import Sequence
 from utils import data_norm
 
 
