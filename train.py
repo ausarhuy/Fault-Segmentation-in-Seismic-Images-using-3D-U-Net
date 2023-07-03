@@ -32,7 +32,7 @@ def train():
     model.summary()
 
     # checkpoint
-    filepath = "check1/fseg-{epoch:02d}.h5"
+    filepath = "model/model-{epoch:02d}.h5"
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc',
                                  verbose=1, save_best_only=False, mode='max')
     # reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
@@ -42,8 +42,9 @@ def train():
     # Fit the model
     history = model.fit(generator=train_generator,
                         validation_data=valid_generator, epochs=100, callbacks=callbacks_list, verbose=1)
-    model.save('check1/fseg.hdf5')
+    model.save('model/model.h5')
     show_history(history)
+
 
 if __name__ == 'main':
     train()
