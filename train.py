@@ -14,7 +14,7 @@ tf.random.set_seed(12345)
 def train():
     # input image dimensions
     params = {'batch_size': 1,
-              'dim': (128, 128, 128),
+              'shape': (128, 128, 128),
               'n_channels': 1,
               'shuffle': True}
     train_path = "./data/train/fault/"
@@ -33,14 +33,14 @@ def train():
 
     # checkpoint
     filepath = "model/model-{epoch:02d}.h5"
-    checkpoint = ModelCheckpoint(filepath, monitor='val_acc',
-                                 verbose=1, save_best_only=False, mode='max')
+    checkpoint = ModelCheckpoint(filepath, monitor='val_loss',
+                                 verbose=1, save_best_only=False, mode='min')
     # reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2,
     #                              patience=20, min_lr=1e-8)
     callbacks_list = [checkpoint]
     print("data prepared, ready to train!")
     # Fit the model
-    history = model.fit(generator=train_generator,
+    history = model.fit(train_generator,
                         validation_data=valid_generator, epochs=100, callbacks=callbacks_list, verbose=1)
     model.save('model/model.h5')
     show_history(history)

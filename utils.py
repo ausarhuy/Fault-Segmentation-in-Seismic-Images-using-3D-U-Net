@@ -56,8 +56,8 @@ def show_history(history):
     print(history.history.keys())
     plt.figure(figsize=(10, 6))
     # summarize history for accuracy
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
+    plt.plot(history.history['accuracy'])
+    plt.plot(history.history['val_accuracy'])
     plt.title('Model accuracy', fontsize=20)
     plt.ylabel('Accuracy', fontsize=20)
     plt.xlabel('Epoch', fontsize=20)
