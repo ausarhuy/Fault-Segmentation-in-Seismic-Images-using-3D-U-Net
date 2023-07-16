@@ -4,6 +4,10 @@ from utils import data_norm
 
 
 def load_sample(file_path, shape=(128, 128, 128), dtype=np.single, norm=True):
+    """
+    In seismic processing, the dimensions of a seismic array is often arranged as
+    a[n3][n2][n1] where n1 represents the vertical dimension.
+    """
     sample = np.fromfile(file_path, dtype=dtype).reshape(shape)
     if norm:
         sample = data_norm(sample)
@@ -14,10 +18,10 @@ def load_sample(file_path, shape=(128, 128, 128), dtype=np.single, norm=True):
 
 class DataGenerator(Sequence):
     """Generates data for keras"""
-
     def __init__(self, path, ids, batch_size=1, shape=(128, 128, 128),
                  n_channels=1, shuffle=True):
         """Initialization"""
+        self.indexes = None
         self.shape = shape
         self.path = path
         self.batch_size = batch_size
@@ -47,7 +51,7 @@ class DataGenerator(Sequence):
     def on_epoch_end(self):
         """Updates indexes after each epoch"""
         self.indexes = np.arange(len(self.ids))
-        if self.shuffle == True:
+        if self.shuffle:
             np.random.shuffle(self.indexes)
 
     def __data_generation(self, ids):

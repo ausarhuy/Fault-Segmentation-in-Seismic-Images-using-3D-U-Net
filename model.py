@@ -1,5 +1,7 @@
-from tensorflow.keras.layers import *
-from tensorflow.keras.models import *
+import tensorflow as tf
+from keras.layers import Input, Conv3D, MaxPooling3D, UpSampling3D, concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.losses import Loss
 
 
 def unet(input_size=(None, None, None, 1)):
@@ -40,39 +42,26 @@ def unet(input_size=(None, None, None, 1)):
     return model
 
 
-def cross_entropy_balanced(y_true, y_pred):
-    # Note: tf.nn.sigmoid_cross_entropy_with_logits expects y_pred is logits,
-    # Keras expects probabilities.
-    # transform y_pred back to logits
-    _epsilon = _to_tensor(K.epsilon(), y_pred.dtype.base_dtype)
-    y_pred = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
-    y_pred = tf.log(y_pred / (1 - y_pred))
+class CrossEntropyBalanced(Loss):
+    def __init__(self, name='cross_entropy_balanced'):
+        super(CrossEntropyBalanced, self).__init__(name=name)
 
-    y_true = tf.cast(y_true, tf.float32)
+    def call(self, y_true, y_pred):
+        _epsilon = tf.convert_to_tensor(tf.keras.backend.epsilon(), dtype=y_pred.dtype.base_dtype)
+        y_pred = tf.clip_by_value(y_pred, _epsilon, 1 - _epsilon)
+        y_pred = tf.math.log(y_pred / (1 - y_pred))
 
-    count_neg = tf.reduce_sum(1. - y_true)
-    count_pos = tf.reduce_sum(y_true)
+        y_true = tf.cast(y_true, tf.float32)
 
-    beta = count_neg / (count_neg + count_pos)
+        count_neg = tf.reduce_sum(1. - y_true)
+        count_pos = tf.reduce_sum(y_true)
 
-    pos_weight = beta / (1 - beta)
+        beta = count_neg / (count_neg + count_pos)
 
-    cost = tf.nn.weighted_cross_entropy_with_logits(logits=y_pred, targets=y_true, pos_weight=pos_weight)
+        pos_weight = beta / (1 - beta)
 
-    cost = tf.reduce_mean(cost * (1 - beta))
+        cost = tf.nn.weighted_cross_entropy_with_logits(logits=y_pred, labels=y_true, pos_weight=pos_weight)
 
-    return tf.where(tf.equal(count_pos, 0.0), 0.0, cost)
+        cost = tf.reduce_mean(cost * (1 - beta))
 
-
-def _to_tensor(x, dtype):
-    """Convert the input `x` to a tensor of type `dtype`.
-    # Arguments
-    x: An object to be converted (numpy array, list, tensors).
-    dtype: The destination type.
-    # Returns
-    A tensor.
-    """
-    x = tf.convert_to_tensor(x)
-    if x.dtype != dtype:
-        x = tf.cast(x, dtype)
-    return x
+        return tf.where(tf.equal(count_pos, 0.0), 0.0, cost)
