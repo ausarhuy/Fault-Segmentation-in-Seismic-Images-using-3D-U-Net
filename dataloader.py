@@ -21,7 +21,6 @@ class DataGenerator(Sequence):
     def __init__(self, path, ids, batch_size=1, shape=(128, 128, 128),
                  n_channels=1, shuffle=True):
         """Initialization"""
-        self.indexes = None
         self.shape = shape
         self.path = path
         self.batch_size = batch_size
@@ -36,12 +35,12 @@ class DataGenerator(Sequence):
 
     def __getitem__(self, index):
         """Generates one batch of data"""
-        # Generate indexes of the batch
+        # Generate indices of the batch
         bsize = self.batch_size
-        indexes = self.indexes[index * bsize:(index + 1) * bsize]
+        indices = self.indices[index * bsize:(index + 1) * bsize]
 
         # Find list of IDs
-        ids = [self.ids[k] for k in indexes]
+        ids = [self.ids[k] for k in indices]
 
         # Generate data
         X, Y = self.__data_generation(ids)
@@ -49,10 +48,10 @@ class DataGenerator(Sequence):
         return X, Y
 
     def on_epoch_end(self):
-        """Updates indexes after each epoch"""
-        self.indexes = np.arange(len(self.ids))
+        """Updates indices after each epoch"""
+        self.indices = np.arange(len(self.ids))
         if self.shuffle:
-            np.random.shuffle(self.indexes)
+            np.random.shuffle(self.indices)
 
     def __data_generation(self, ids):
         """Generates data containing batch_size samples"""
@@ -68,9 +67,4 @@ class DataGenerator(Sequence):
         Y[0,] = np.reshape(fault, (*self.shape, self.n_channels))
         X[1,] = np.reshape(np.flipud(seis), (*self.shape, self.n_channels))
         Y[1,] = np.reshape(np.flipud(fault), (*self.shape, self.n_channels))
-        '''
-        for i in range(4):
-          X[i,] = np.reshape(np.rot90(seis,i,(2,1)), (*self.shape,self.n_channels))
-          Y[i,] = np.reshape(np.rot90(fault,i,(2,1)), (*self.shape,self.n_channels))  
-        '''
         return X, Y
