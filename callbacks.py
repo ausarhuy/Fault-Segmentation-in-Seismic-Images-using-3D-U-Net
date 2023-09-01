@@ -10,6 +10,7 @@ class EarlyStoppingReduceLROnPlateau(ReduceLROnPlateau):
         self.early_stopping = kwargs.pop('early_stopping', False)
         super().__init__(*args, **kwargs)
         self.best_weights = None
+        self.best_epoch = 0
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
@@ -26,6 +27,7 @@ class EarlyStoppingReduceLROnPlateau(ReduceLROnPlateau):
 
             if self.monitor_op(current, self.best):
                 self.best = current
+                self.best_epoch = epoch+1
                 self.wait = 0
                 if self.restore_best_weights:
                     self.best_weights = self.model.get_weights()
@@ -43,14 +45,14 @@ class EarlyStoppingReduceLROnPlateau(ReduceLROnPlateau):
                         new_lr = max(new_lr, self.min_lr)
                         tf.keras.backend.set_value(self.model.optimizer.lr, new_lr)
                         if self.verbose > 0:
-                            print('\nEpoch %05d: Reducing learning rate to %s.' % (epoch + 1, new_lr))
+                            print('\nEpoch %d: Reducing learning rate to %s.' % (epoch + 1, new_lr))
                         if self.restore_best_weights and self.best_weights is not None:
-                            print('\nRestoring model weights from the end of the best epoch.')
+                            print('Restoring model weights from the end of the best epoch.')
                             self.model.set_weights(self.best_weights)
                         self.cooldown_counter = self.cooldown
                         self.wait = 0
 
     def on_train_end(self, logs=None):
         if self.restore_best_weights and self.best_weights is not None:
-            print('Restoring model weights from the end of the best epoch at end of training.')
+            print(f'Restoring model weights from the end of the best epoch: {self.best_epoch} at end of training.')
             self.model.set_weights(self.best_weights)
