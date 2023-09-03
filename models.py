@@ -154,36 +154,36 @@ def inception_unet(input_shape=(None, None, None, 1), seed=2000) -> Model:
 
 
 def inception_se_unet(input_shape=(None, None, None, 1), seed=2000) -> Model:
-    def inception_block(inputs):
-        conv11 = Conv3D(8, 3, activation='relu', padding='same',
+    def inception_block(inputs, filters):
+        conv11 = Conv3D(filters, 3, activation='relu', padding='same',
                         kernel_initializer=GlorotNormal(seed=seed))(inputs)
-        conv121 = Conv3D(8, 3, activation='relu', padding='same',
+        conv121 = Conv3D(filters, 3, activation='relu', padding='same',
                          kernel_initializer=GlorotNormal(seed=seed))(inputs)
-        conv122 = Conv3D(8, 3, activation='relu', padding='same',
+        conv122 = Conv3D(filters, 3, activation='relu', padding='same',
                          kernel_initializer=GlorotNormal(seed=seed))(conv121)
-        conv131 = Conv3D(8, 3, activation='relu', padding='same',
+        conv131 = Conv3D(filters, 3, activation='relu', padding='same',
                          kernel_initializer=GlorotNormal(seed=seed))(inputs)
-        conv132 = Conv3D(8, 3, activation='relu', padding='same',
+        conv132 = Conv3D(filters, 3, activation='relu', padding='same',
                          kernel_initializer=GlorotNormal(seed=seed))(conv131)
         concat1 = Concatenate(axis=-1)([conv11, conv122, conv132])
-        conv2 = Conv3D(8, 3, activation='relu', padding='same',
+        conv2 = Conv3D(filters, 3, activation='relu', padding='same',
                        kernel_initializer=GlorotNormal(seed=seed))(concat1)
         return Concatenate(axis=-1)([inputs, conv2])
     inputs = Input(input_shape)
     # downsampling
-    block1 = inception_block(inputs)  # 128
+    block1 = inception_block(inputs, 4)  # 128
     se1 = SEBlock(reduction_ratio=8, seed=seed)(block1)
     pool1 = MaxPooling3D(pool_size=(2, 2, 2))(se1)  # 64
 
-    block2 = inception_block(pool1)  # 64
+    block2 = inception_block(pool1, 8)  # 64
     se2 = SEBlock(reduction_ratio=8, seed=seed)(block2)
     pool2 = MaxPooling3D(pool_size=(2, 2, 2))(se2)  # 32
 
-    block3 = inception_block(pool2)  # 32
+    block3 = inception_block(pool2, 32)  # 32
     se3 = SEBlock(reduction_ratio=8, seed=seed)(block3)
     pool3 = MaxPooling3D(pool_size=(2, 2, 2))(se3)  # 16
 
-    block4 = inception_block(pool3)  # 16
+    block4 = inception_block(pool3, 64)  # 16
     se4 = SEBlock(reduction_ratio=8, seed=seed)(block4)
     pool4 = MaxPooling3D(pool_size=(2, 2, 2))(se4)  # 8
 
