@@ -8,22 +8,32 @@ def data_norm(image):
     return (image - mean) / std
 
 
-def plot2d(seis, fault, at=1):
+def plot2d(seis, fault, pred=None, at=1):
     # Create figure and axes
     fig = plt.figure(figsize=(15, 5))
+    #
     seis_slice_ax = fig.add_subplot(131)
     seis_slice_ax.set_title('Seismic 2D sliced image')
     seis_slice_ax.imshow(seis, vmin=-2, vmax=2, cmap=plt.cm.bone, interpolation='nearest', aspect=at)
+    #
     fault_slice_ax = fig.add_subplot(132)
     fault_slice_ax.imshow(fault, vmin=0, vmax=1, cmap=plt.cm.bone, interpolation='nearest', aspect=at)
-    fault_slice_ax.set_title('Fault segment 2D sliced image')
+    fault_slice_ax.set_title('Fault segment Growth-Truth 2D sliced image')
+    #
+    if pred is not None:
+        fault_slice_ax = fig.add_subplot(133)
+        fault_slice_ax.imshow(fault, vmin=0, vmax=1, cmap=plt.cm.bone, interpolation='nearest', aspect=at)
+        fault_slice_ax.set_title('Fault segment Prediction 2D sliced image')
+
+    # Adjust spacing between subplots
+    fig.subplots_adjust(wspace=0.3)
     plt.tight_layout()
     plt.show()
 
 
-def plot3d(seis, fault):
+def plot3d(seis, fault, pred=None):
     # Create figure and 3D axes
-    fig = plt.figure(figsize=(12, 6))
+    fig = plt.figure(figsize=(15, 5))
     seis_ax = fig.add_subplot(121, projection='3d')
     fault_ax = fig.add_subplot(122, projection='3d')
     # Generate coordinates for each point in the volume
@@ -44,9 +54,17 @@ def plot3d(seis, fault):
     fault_ax.set_ylabel('Y')
     fault_ax.set_zlabel('Z')
     fault_ax.set_title('Fault segment 3D image')
+    # Create a scatter plot for fault segment prediction
+    if pred is not None:
+        pred_ax = fig.add_subplot(123, projection='3d')
+        pred_ax.scatter(x, y, z, c=pred.flatten(), cmap=plt.cm.bone, marker='.')
+        pred_ax.set_xlabel('X')
+        pred_ax.set_ylabel('Y')
+        pred_ax.set_zlabel('Z')
+        pred_ax.set_title('Fault segment Prediction 3D image')
+
     # Adjust spacing between subplots
     fig.subplots_adjust(wspace=0.3)
-    # Show the plot
     plt.tight_layout()
     plt.show()
 
