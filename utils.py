@@ -69,19 +69,19 @@ def plot3d(seis, fault, pred=None):
     plt.show()
 
 
-def show_history(history):
-    # list all data in history
-    print(history.history.keys())
+def show_history(history, save_path=None):
     plt.figure(figsize=(10, 6))
     # summarize history for accuracy
-    plt.plot(history.history['accuracy'])
-    plt.plot(history.history['val_accuracy'])
+    plt.plot(history.history['binary_accuracy'])
+    plt.plot(history.history['val_binary_accuracy'])
     plt.title('Model accuracy', fontsize=20)
     plt.ylabel('Accuracy', fontsize=20)
     plt.xlabel('Epoch', fontsize=20)
     plt.legend(['train', 'validation'], loc='center right', fontsize=20)
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
+    if save_path is not None:
+        plt.savefig(save_path+'accuracy.png')
     plt.show()
 
     # summarize history for loss
@@ -94,4 +94,53 @@ def show_history(history):
     plt.legend(['train', 'validation'], loc='center right', fontsize=20)
     plt.tick_params(axis='both', which='major', labelsize=18)
     plt.tick_params(axis='both', which='minor', labelsize=18)
+    if save_path is not None:
+        plt.savefig(save_path+'lose.png')
+    plt.show()
+
+
+def show_histories(histories, save_path=None):
+    plt.figure(figsize=(10, 6))
+
+    # Define line colors
+    colors = ['blue', 'red', 'green', 'orange']
+
+    # Plot accuracy for each history with different line colors
+    for i, (name, history) in enumerate(histories.items()):
+        plt.plot(history.history['binary_accuracy'], label=f'{name} train', color=colors[i % len(colors)])
+
+    # Plot validation accuracy for each history with different line colors
+    for i, (name, history) in enumerate(histories.items()):
+        plt.plot(history.history['val_binary_accuracy'], label=f'{name} validation', linestyle='dashed',
+                 color=colors[i % len(colors)])
+
+    plt.title('Models accuracy', fontsize=20)
+    plt.ylabel('Accuracy', fontsize=20)
+    plt.xlabel('Epoch', fontsize=20)
+    plt.legend(loc='center right', fontsize=10)
+    plt.tick_params(axis='both', which='major', labelsize=18)
+    plt.tick_params(axis='both', which='minor', labelsize=18)
+    if save_path is not None:
+        plt.savefig(save_path+'accuracies.png')
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+
+    # Plot loss for each history with different line colors
+    for i, (name, history) in enumerate(histories.items()):
+        plt.plot(history.history['loss'], label=f'{name} train', color=colors[i % len(colors)])
+
+    # Plot validation loss for each history with different line colors
+    for i, (name, history) in enumerate(histories.items()):
+        plt.plot(history.history['val_loss'], label=f'{name} validation', linestyle='dashed',
+                 color=colors[i % len(colors)])
+
+    plt.title('Models loss', fontsize=20)
+    plt.ylabel('Loss', fontsize=20)
+    plt.xlabel('Epoch', fontsize=20)
+    plt.legend(loc='center right', fontsize=10)
+    plt.tick_params(axis='both', which='major', labelsize=18)
+    plt.tick_params(axis='both', which='minor', labelsize=18)
+    if save_path is not None:
+        plt.savefig(save_path+'loses.png')
     plt.show()
