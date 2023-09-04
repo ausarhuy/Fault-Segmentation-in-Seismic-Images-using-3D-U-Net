@@ -5,6 +5,7 @@ We trained 4 models in models.ipynb
 - Inception U-Net
 - Bi-stream U-net
 - Bi-stream-SE U-Net
+
 The samples prediction can be found in prediction.ipynb
 ## GitHub code reference
 [xinwucwp/faultSeg](https://github.com/xinwucwp/faultSeg)
