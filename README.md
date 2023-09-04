@@ -1,12 +1,12 @@
 # Fault-Segmentation-in-Seismic-Images-using-3D-U-Net
 ## In this project, we're benchmarking 4 models:
-We trained 4 models in models.ipynb
+We trained 4 models in [models.ipynb](models.ipynb)
 - SE U-Net
 - Inception U-Net
 - Bi-stream U-net
 - Bi-stream-SE U-Net
 
-The samples prediction can be found in prediction.ipynb
+The samples prediction can be found in [prediction.ipynb](prediction.ipynb)
 ## GitHub code reference
 [xinwucwp/faultSeg](https://github.com/xinwucwp/faultSeg)
 ## Data google drive
