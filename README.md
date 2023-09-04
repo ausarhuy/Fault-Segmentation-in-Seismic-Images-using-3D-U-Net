@@ -11,3 +11,5 @@ The samples prediction can be found in [prediction.ipynb](prediction.ipynb)
 [xinwucwp/faultSeg](https://github.com/xinwucwp/faultSeg)
 ## Data google drive
 [Seismic Data](https://drive.google.com/drive/folders/1Wz4Er2sMak_E0BaVnnNxIQYVzwb3c9bD?usp=sharing)
+## Models weights google drive
+[Models](https://drive.google.com/drive/folders/12sbg4My5p38CvotbgMWQu1hPlC12EDKI?usp=drive_link)
